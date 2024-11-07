@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator Nilai Mahasiswa</title>
+  
+  <!-- Menambahkan CSS untuk styling -->
+  <style>
+    /* Gaya untuk body */
+    body {
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #e09, #d0e);
+      color: #333;
+      animation: gradientShift 10s infinite alternate;
+    }
+
+    /* Animasi latar belakang */
+    @keyframes gradientShift {
+      0% {
+        background: linear-gradient(135deg, #e09, #d0e);
+      }
+      100% {
+        background: linear-gradient(135deg, #d0e, #e09);
+      }
+    }
+
+    /* Gaya untuk kotak kalkulator */
+    .calculator {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      transition: transform 0.3s;
+      animation: bounceIn 1s ease;
+    }
+
+    .calculator:hover {
+      transform: scale(1.03);
+    }
+
+    /* Animasi kotak kalkulator */
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      60% {
+        transform: scale(1.1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Gaya untuk judul */
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #4CAF50;
+      animation: fadeInText 1s ease;
+    }
+
+    /* Animasi teks */
+    @keyframes fadeInText {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Gaya untuk grup input */
+    .input-group {
+      margin-bottom: 20px;
+      animation: fadeInInput 1s ease-in-out;
+    }
+
+    /* Animasi input */
+    @keyframes fadeInInput {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Gaya untuk label input */
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    /* Gaya untuk elemen input */
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      outline: none;
+      transition: box-shadow 0.3s;
+    }
+
+    input:focus {
+      box-shadow: 0 0 5px 2px #4CAF50;
+      animation: pulse 1s infinite;
+    }
+
+    /* Animasi fokus input */
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 5px 2px #4CAF50;
+      }
+      50% {
+        box-shadow: 0 0 15px 5px #4CAF50;
+      }
+      100% {
+        box-shadow: 0 0 5px 2px #4CAF50;
+      }
+    }
+
+    /* Gaya untuk tombol */
+    button {
+      width: 100%;
+      padding: 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.2s;
+      animation: fadeInButton 1s ease-in-out;
+    }
+
+    button:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
+
+    /* Animasi tombol */
+    @keyframes fadeInButton {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Gaya untuk kotak hasil */
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f7f7f7;
+      border-radius: 10px;
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    /* Animasi untuk hasil */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Gaya warna hijau untuk status lulus */
+    .pass {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+
+    /* Gaya warna merah untuk status gagal */
+    .fail {
+      color: #F44336;
+      font-weight: bold;
+    }
+  </style>
+
+  <!-- Menyisipkan font dari Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Kotak utama kalkulator -->
+  <div class="calculator">
+    <h1>Kalkulator Nilai Mahasiswa</h1>
+
+    <!-- Input nilai Tugas -->
+    <div class="input-group">
+      <label for="assignment">Nilai Tugas (30%):</label>
+      <input type="number" id="assignment" min="0" max="100" required>
+    </div>
+
+    <!-- Input nilai UTS -->
+    <div class="input-group">
+      <label for="midterm">Nilai UTS (30%):</label>
+      <input type="number" id="midterm" min="0" max="100" required>
+    </div>
+
+    <!-- Input nilai UAS -->
+    <div class="input-group">
+      <label for="final">Nilai UAS (40%):</label>
+      <input type="number" id="final" min="0" max="100" required>
+    </div>
+
+    <!-- Tombol untuk menghitung nilai -->
+    <button onclick="calculateGrade()">Hitung Nilai</button>
+
+    <!-- Tempat untuk menampilkan hasil -->
+    <div class="result" id="result"></div>
+  </div>
+
+  <!-- JavaScript untuk logika kalkulator -->
+  <script>
+    // Deklarasi konstanta untuk bobot dan nilai kelulusan
+    const assignmentWeight = 0.3;
+    const midtermWeight = 0.3;
+    const finalWeight = 0.4;
+    const passingGrade = 60;
+
+    // Fungsi untuk menghitung nilai akhir dan status kelulusan
+    function calculateGrade() {
+      // Mengambil nilai dari input
+      const assignment = parseFloat(document.getElementById('assignment').value);
+      const midterm = parseFloat(document.getElementById('midterm').value);
+      const final = parseFloat(document.getElementById('final').value);
+
+      // Validasi input untuk memastikan berada di antara 0 dan 100
+      if (isNaN(assignment) || assignment < 0 || assignment > 100 ||
+          isNaN(midterm) || midterm < 0 || midterm > 100 ||
+          isNaN(final) || final < 0 || final > 100) {
+        document.getElementById('result').innerHTML = '<p style="color: #F44336;">Silakan masukkan nilai antara 0 dan 100.</p>';
+        return;
+      }
+
+      // Menghitung rata-rata tertimbang dari nilai input
+      const weightedAverage = (assignment * assignmentWeight) + (midterm * midtermWeight) + (final * finalWeight);
+
+      // Menentukan nilai huruf berdasarkan nilai rata-rata
+      let letterGrade;
+      if (weightedAverage >= 90) {
+        letterGrade = 'A';
+      } else if (weightedAverage >= 80) {
+        letterGrade = 'B';
+      } else if (weightedAverage >= 70) {
+        letterGrade = 'C';
+      } else if (weightedAverage >= 60) {
+        letterGrade = 'D';
+      } else {
+        letterGrade = 'E';
+      }
+
+      // Menentukan status lulus atau gagal
+      const status = weightedAverage >= passingGrade ? 'Lulus' : 'Tidak Lulus';
+      const statusClass = status === 'Lulus' ? 'pass' : 'fail';
+
+      // Menampilkan hasil di dalam elemen hasil
+      document.getElementById('result').innerHTML = `
+        <p>Nilai Tugas: ${(assignment * assignmentWeight).toFixed(2)}</p>
+        <p>Nilai UTS: ${(midterm * midtermWeight).toFixed(2)}</p>
+        <p>Nilai UAS: ${(final * finalWeight).toFixed(2)}</p>
+        <p>Rata-rata Tertimbang: ${weightedAverage.toFixed(2)}</p>
+        <p class="${statusClass}">Nilai Akhir: ${letterGrade} (${status})</p>
+      `;
+    }
+  </script>
+</body>
+</html>
